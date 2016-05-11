@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Drive Assist</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css" />
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+
+    <!--    Custom Fonts -->
+    <link rel="stylesheet" href="./css/index.css">
+
+    <!--    Google Fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Chicle' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Sigmar+One' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Fruktur' rel='stylesheet' type='text/css'>
+</head>
+
+<body>
+    <div data-role="page" class="screen theme_Black" id="pageone" data-theme="a">
+        <div class="center">
+            <img src="./img/logo-text.png" class="login-logo" />
+        </div>
+        <div data-role="main" class="ui-content theme_Black" style="height:100%">
+            <ul data-role="listview" data-autodividers="false" class="theme_Blue" data-inset="true">
+                <li data-icon="false" class="theme_Green font_Lobster form-subject">Log in</li>
+                <li data-icon="false">
+                    <div class="ui-field-contain">
+                        <input type="text" id="username" class="text-input-field" placeholder="username">
+                    </div>
+                    <div class="ui-field-contain">
+                        <input type="password" id="password" class="text-input-field" onkeypress="handle(event)" placeholder="password">
+                    </div>
+                    <div data-role="controlgroup" class="submit-btn-frame" data-type="horizontal">
+                        <a href="#" onclick="singInClick()" class="ui-btn ui-corner-all ui-shadow theme_Green font_Chicle submit-btn">Submit</a>
+                    </div>
+                </li>
+            </ul>
+            <div class="below-form">
+                <h3 class="font_Pacifico">or</h3>
+            </div>
+            <div class="below-form">
+                <button class="theme_Green font_Chicle submit-btn" onclick="registrationClick()">Register</button>
+            </div>
+        </div>
+        <div data-role="popup" class="popUp" id="myDialog" data-overlay-theme="a">
+            <div data-role="header" class="popUp-header theme_Green font_SigmarOne">
+                <h4 id="dialogHeaderText"></h4>
+            </div>
+            <div data-role="main" class="ui-content">
+                <div class="containing-element">
+                    <h5 id="dialogMainText"></h5>
+                </div>
+            </div>
+            <br>
+            <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b ui-icon-back ui-btn-icon-left theme_Green submit-btn" data-rel="back">Back</a>
+        </div>
+    </div>
+    <a href="#myDialog" id="dialogButton" data-rel="popup" data-position-to="window" data-transition="fade" class="ui-btn ui-corner-all ui-shadow ui-btn-icon-left" style="display:none"></a>
+    <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js"></script>
+</body>
+
+</html>
+
+<script>
+    $(function () {
+        if (localStorage.getItem('user_permanent') != null) {
+            window.location = 'main_mobile.html';
+        }
+        $('.ui-btn').css('background-color', 'gray');
+    });
+
+    function handle(e) {
+        if (e.keyCode === 13) {
+            singInClick();
+        }
+        return false;
+    }
+
+    function openDialog(headerText, mainText) {
+        $('#dialogHeaderText').text(headerText);
+        $('#dialogMainText').text(mainText)
+        $('#dialogButton').click()
+    }
+
+    function singInClick() {
+        if ($('#username').val() == '') {
+            openDialog('Info', 'Unesite korisničko ime.');
+            return;
+        }
+
+        if ($('#password').val() == '') {
+            openDialog('Info', 'Unesite lozinku.');
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "http://damjan.voidsoft.in.rs/php/login.php",
+            xhrFields: {
+                withCredentials: false
+            },
+            crossDomain: true,
+            beforeSend: function () {
+                $.mobile.loading('show')
+            },
+            complete: function () {
+                $.mobile.loading('hide')
+            },
+            data: {
+                username: $('#username').val(),
+                password: $('#password').val()
+            },
+            dataType: 'text',
+            success: function (response) {
+                if (response.indexOf('true') != -1) {
+                    localStorage.setItem('user_permanent', $('#username').val());
+                    window.location = "main_mobile.html";
+                } else
+                    openDialog('', response);
+            },
+            error: function () {
+                openDialog('Error', 'Interna greška na serveru!\n\rProbajte kasnije.');
+            }
+        });
+    };
+
+    function registrationClick() {
+        window.location = "registration_mobile.html";
+    };
+</script>
