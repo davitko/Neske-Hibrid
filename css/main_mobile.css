@@ -1,0 +1,18 @@
+.theme-btn {
+    background: #008F68 !important;
+    color: #fff !important;
+    font-size: 0.8rem !important;
+}
+
+.main-logo {
+    max-width: 135px;
+}
+
+.main-header {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.remove-btn-frame {
+    text-align: center!important;
+}
